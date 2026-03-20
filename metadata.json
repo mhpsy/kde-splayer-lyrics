@@ -1,0 +1,19 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "mhpsy"
+            }
+        ],
+        "Category": "Multimedia",
+        "Description": "Display current song lyrics from SPlayer in the panel",
+        "Icon": "view-media-lyrics",
+        "Id": "org.mhpsy.splayer.lyrics",
+        "License": "MIT",
+        "Name": "SPlayer Lyrics",
+        "Version": "1.0.0",
+        "Website": "https://github.com/mhpsy/kde-splayer-lyrics"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-MainScript": "ui/main.qml"
+}
