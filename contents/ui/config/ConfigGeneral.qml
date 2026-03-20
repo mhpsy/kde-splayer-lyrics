@@ -76,8 +76,58 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: i18n("Use Custom Color:")
         }
 
+        // Preset color buttons
+        Flow {
+            Kirigami.FormData.label: i18n("Preset Colors:")
+            enabled: useCustomColorCheck.checked
+            spacing: Kirigami.Units.smallSpacing
+            Layout.fillWidth: true
+
+            Repeater {
+                model: [
+                    { name: "Snow",       color: "#FFFFFF" },
+                    { name: "Sakura",     color: "#FF9CAD" },
+                    { name: "Coral",      color: "#FF6B6B" },
+                    { name: "Sunset",     color: "#FF8C42" },
+                    { name: "Amber",      color: "#FFB627" },
+                    { name: "Lime",       color: "#A8E06C" },
+                    { name: "Mint",       color: "#6CEABC" },
+                    { name: "Cyan",       color: "#5BCEFA" },
+                    { name: "Sky",        color: "#74B9FF" },
+                    { name: "Lavender",   color: "#B19CD9" },
+                    { name: "Orchid",     color: "#E88CED" },
+                    { name: "Silver",     color: "#BDC3C7" }
+                ]
+
+                delegate: AbstractButton {
+                    width: Kirigami.Units.gridUnit * 2.5
+                    height: Kirigami.Units.gridUnit * 2.5
+                    hoverEnabled: true
+
+                    ToolTip.visible: hovered
+                    ToolTip.text: modelData.name
+                    ToolTip.delay: 300
+
+                    onClicked: fontColorField.text = modelData.color
+
+                    contentItem: Rectangle {
+                        radius: width / 2
+                        color: modelData.color
+                        border.color: fontColorField.text === modelData.color
+                            ? Kirigami.Theme.highlightColor
+                            : (parent.hovered ? Kirigami.Theme.textColor : Qt.rgba(0,0,0,0.3))
+                        border.width: fontColorField.text === modelData.color ? 3 : 1
+
+                        Behavior on border.width {
+                            NumberAnimation { duration: 150 }
+                        }
+                    }
+                }
+            }
+        }
+
         RowLayout {
-            Kirigami.FormData.label: i18n("Font Color:")
+            Kirigami.FormData.label: i18n("Custom Color:")
             enabled: useCustomColorCheck.checked
 
             TextField {

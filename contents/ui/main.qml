@@ -28,6 +28,7 @@ PlasmoidItem {
     property bool isPlaying: false
     property string songTitle: ""
     property string songArtist: ""
+    property string coverUrl: ""
     property bool wsConnected: false
 
     preferredRepresentation: compactRepresentation
@@ -56,6 +57,7 @@ PlasmoidItem {
         wsConnected: root.wsConnected
         songTitle: root.songTitle
         songArtist: root.songArtist
+        coverUrl: root.coverUrl
         currentTimeMs: root.currentTimeMs
         durationMs: root.durationMs
         lrcData: root.lrcData
@@ -97,6 +99,17 @@ PlasmoidItem {
     }
 
     Timer {
+        id: requestSongInfoTimer
+        interval: 500
+        repeat: false
+        onTriggered: {
+            if (ws.status === WebSocket.Open) {
+                ws.sendTextMessage(JSON.stringify({ type: "get-song-info" }))
+            }
+        }
+    }
+
+    Timer {
         id: heartbeatTimer
         interval: 30000
         repeat: true
@@ -127,10 +140,11 @@ PlasmoidItem {
             if (msg.data) {
                 songTitle = msg.data.playName || msg.data.name || ""
                 songArtist = msg.data.artistName || msg.data.artists || ""
+                coverUrl = msg.data.cover || ""
                 currentTimeMs = (msg.data.currentTime || 0)
                 durationMs = (msg.data.duration || 0)
-                if (msg.data.lrcData) lrcData = msg.data.lrcData
-                if (msg.data.yrcData) yrcData = msg.data.yrcData
+                if (msg.data.lrcData && msg.data.lrcData.length > 0) lrcData = msg.data.lrcData
+                if (msg.data.yrcData && msg.data.yrcData.length > 0) yrcData = msg.data.yrcData
                 isPlaying = (msg.data.playStatus === "play")
                 updateCurrentLyric()
             }
@@ -147,10 +161,12 @@ PlasmoidItem {
                 songTitle = msg.data.name || ""
                 songArtist = msg.data.artist || ""
                 durationMs = msg.data.duration || 0
-                // Reset lyrics until lyric-change arrives
+                coverUrl = ""
                 currentLyric = ""
                 lrcData = []
                 yrcData = []
+                // Request full song info to get lyrics & cover
+                requestSongInfoTimer.restart()
             }
             break
 
@@ -164,8 +180,8 @@ PlasmoidItem {
 
         case "lyric-change":
             if (msg.data) {
-                if (msg.data.lrcData) lrcData = msg.data.lrcData
-                if (msg.data.yrcData) yrcData = msg.data.yrcData
+                if (msg.data.lrcData && msg.data.lrcData.length > 0) lrcData = msg.data.lrcData
+                if (msg.data.yrcData && msg.data.yrcData.length > 0) yrcData = msg.data.yrcData
                 updateCurrentLyric()
             }
             break

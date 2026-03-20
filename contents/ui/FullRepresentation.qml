@@ -11,40 +11,88 @@ ColumnLayout {
     property bool wsConnected: false
     property string songTitle: ""
     property string songArtist: ""
+    property string coverUrl: ""
     property real currentTimeMs: 0
     property real durationMs: 0
     property var lrcData: []
 
     signal controlCommand(string cmd)
 
-    Layout.preferredWidth: Kirigami.Units.gridUnit * 20
-    Layout.preferredHeight: Kirigami.Units.gridUnit * 16
-    Layout.minimumWidth: Kirigami.Units.gridUnit * 14
+    Layout.preferredWidth: Kirigami.Units.gridUnit * 22
+    Layout.preferredHeight: Kirigami.Units.gridUnit * 20
+    Layout.minimumWidth: Kirigami.Units.gridUnit * 16
 
     spacing: Kirigami.Units.smallSpacing
 
-    // Header: song info
-    ColumnLayout {
+    // Header: cover + song info
+    RowLayout {
         Layout.fillWidth: true
         Layout.margins: Kirigami.Units.largeSpacing
-        spacing: 2
+        spacing: Kirigami.Units.largeSpacing
 
-        Label {
-            text: songTitle.length > 0 ? songTitle : "No song playing"
-            font.pixelSize: Kirigami.Theme.defaultFont.pixelSize * 1.3
-            font.bold: true
-            elide: Text.ElideRight
-            Layout.fillWidth: true
-            color: Kirigami.Theme.textColor
+        // Album cover
+        Rectangle {
+            Layout.preferredWidth: Kirigami.Units.gridUnit * 5
+            Layout.preferredHeight: Kirigami.Units.gridUnit * 5
+            radius: 6
+            color: Kirigami.Theme.backgroundColor
+            border.color: coverImage.status === Image.Ready ? "transparent" : Kirigami.Theme.disabledTextColor
+            border.width: 1
+            clip: true
+
+            Image {
+                id: coverImage
+                anchors.fill: parent
+                source: coverUrl
+                fillMode: Image.PreserveAspectCrop
+                visible: status === Image.Ready
+                sourceSize.width: parent.width * 2
+                sourceSize.height: parent.height * 2
+            }
+
+            // Placeholder icon when no cover
+            Label {
+                anchors.centerIn: parent
+                text: "♪"
+                font.pixelSize: Kirigami.Units.gridUnit * 2
+                color: Kirigami.Theme.disabledTextColor
+                visible: coverImage.status !== Image.Ready
+            }
         }
 
-        Label {
-            text: songArtist.length > 0 ? songArtist : ""
-            visible: songArtist.length > 0
-            font.pixelSize: Kirigami.Theme.defaultFont.pixelSize
-            elide: Text.ElideRight
+        // Song info
+        ColumnLayout {
             Layout.fillWidth: true
-            color: Kirigami.Theme.disabledTextColor
+            spacing: 4
+
+            Label {
+                text: songTitle.length > 0 ? songTitle : "No song playing"
+                font.pixelSize: Kirigami.Theme.defaultFont.pixelSize * 1.3
+                font.bold: true
+                elide: Text.ElideRight
+                Layout.fillWidth: true
+                color: Kirigami.Theme.textColor
+            }
+
+            Label {
+                text: songArtist.length > 0 ? songArtist : ""
+                visible: songArtist.length > 0
+                font.pixelSize: Kirigami.Theme.defaultFont.pixelSize
+                elide: Text.ElideRight
+                Layout.fillWidth: true
+                color: Kirigami.Theme.disabledTextColor
+            }
+
+            // Current lyric highlight
+            Label {
+                text: currentLyric.length > 0 ? currentLyric : ""
+                visible: currentLyric.length > 0
+                font.pixelSize: Kirigami.Theme.defaultFont.pixelSize * 0.9
+                font.italic: true
+                elide: Text.ElideRight
+                Layout.fillWidth: true
+                color: Kirigami.Theme.highlightColor
+            }
         }
     }
 
@@ -57,18 +105,24 @@ ColumnLayout {
         Layout.fillWidth: true
     }
 
-    // Lyrics list
-    ScrollView {
+    // Lyrics list - no scrollbar
+    Item {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.margins: Kirigami.Units.smallSpacing
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+        Layout.rightMargin: Kirigami.Units.smallSpacing
         clip: true
 
         ListView {
             id: lyricsListView
+            anchors.fill: parent
             model: lrcData
-            spacing: 4
+            spacing: 6
             currentIndex: findCurrentLyricIndex()
+            highlightMoveDuration: 300
+            preferredHighlightBegin: height / 2 - Kirigami.Units.gridUnit
+            preferredHighlightEnd: height / 2 + Kirigami.Units.gridUnit
+            highlightRangeMode: ListView.ApplyRange
 
             delegate: Label {
                 width: lyricsListView.width
@@ -95,7 +149,8 @@ ColumnLayout {
                 color: index === lyricsListView.currentIndex
                     ? Kirigami.Theme.highlightColor
                     : Kirigami.Theme.textColor
-                opacity: index === lyricsListView.currentIndex ? 1.0 : 0.6
+                opacity: index === lyricsListView.currentIndex ? 1.0 : 0.5
+                padding: 2
 
                 Behavior on font.pixelSize {
                     NumberAnimation { duration: 200 }
@@ -105,10 +160,13 @@ ColumnLayout {
                 }
             }
 
-            onCurrentIndexChanged: {
-                if (currentIndex >= 0) {
-                    positionViewAtIndex(currentIndex, ListView.Center)
-                }
+            // Empty state
+            Label {
+                anchors.centerIn: parent
+                visible: lrcData.length === 0
+                text: wsConnected ? "暂无歌词" : "未连接"
+                color: Kirigami.Theme.disabledTextColor
+                font.pixelSize: Kirigami.Theme.defaultFont.pixelSize * 1.1
             }
 
             function findCurrentLyricIndex() {
