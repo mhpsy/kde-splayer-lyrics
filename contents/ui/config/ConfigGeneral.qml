@@ -16,6 +16,7 @@ KCM.SimpleKCM {
     property alias cfg_fontColor: fontColorField.text
     property alias cfg_animationType: animationTypeCombo.currentValue
     property alias cfg_animationDuration: animationDurationField.value
+    property alias cfg_minWidth: minWidthField.value
     property alias cfg_maxWidth: maxWidthField.value
     property alias cfg_idleText: idleTextField.text
     property alias cfg_preferTranslation: preferTranslationCheck.checked
@@ -180,6 +181,14 @@ KCM.SimpleKCM {
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: i18n("Layout")
+        }
+
+        SpinBox {
+            id: minWidthField
+            Kirigami.FormData.label: i18n("Min Width (px):")
+            from: 50
+            to: 600
+            stepSize: 10
         }
 
         SpinBox {

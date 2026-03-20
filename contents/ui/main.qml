@@ -16,6 +16,7 @@ PlasmoidItem {
     property string animationType: plasmoid.configuration.animationType
     property int animationDuration: plasmoid.configuration.animationDuration
     property int maxWidth: plasmoid.configuration.maxWidth
+    property int minWidth: plasmoid.configuration.minWidth
     property string idleText: plasmoid.configuration.idleText
     property bool preferTranslation: plasmoid.configuration.preferTranslation
 
@@ -47,6 +48,7 @@ PlasmoidItem {
         animationType: root.animationType
         animationDuration: root.animationDuration
         maxWidth: root.maxWidth
+        minWidth: root.minWidth
         songTitle: root.songTitle
         songArtist: root.songArtist
     }

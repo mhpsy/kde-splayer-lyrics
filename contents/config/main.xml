@@ -36,6 +36,9 @@
         <entry name="maxWidth" type="Int">
             <default>400</default>
         </entry>
+        <entry name="minWidth" type="Int">
+            <default>150</default>
+        </entry>
         <entry name="idleText" type="String">
             <default>♪ SPlayer Lyrics</default>
         </entry>

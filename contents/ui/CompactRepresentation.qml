@@ -20,6 +20,7 @@ MouseArea {
     property string animationType: "slide"
     property int animationDuration: 300
     property int maxWidth: 400
+    property int minWidth: 150
     property string songTitle: ""
     property string songArtist: ""
 
@@ -35,11 +36,10 @@ MouseArea {
     property bool animating: false
 
     Layout.fillHeight: true
-    Layout.preferredWidth: Math.min(lyricLabel.implicitWidth + Kirigami.Units.smallSpacing * 2, maxWidth)
-    Layout.minimumWidth: 50
+    Layout.preferredWidth: Math.min(Math.max(lyricLabel.implicitWidth + Kirigami.Units.smallSpacing * 2, minWidth), maxWidth)
+    Layout.minimumWidth: minWidth
 
     acceptedButtons: Qt.LeftButton | Qt.MiddleButton
-    hoverEnabled: true
 
     onClicked: function(mouse) {
         if (mouse.button === Qt.MiddleButton) {
@@ -52,12 +52,10 @@ MouseArea {
     }
 
     // Tooltip
-    ToolTip {
-        id: tooltip
-        visible: compactRoot.containsMouse && songTitle.length > 0
-        text: songTitle + (songArtist.length > 0 ? " - " + songArtist : "")
-        delay: 500
-    }
+    hoverEnabled: true
+    ToolTip.visible: containsMouse && songTitle.length > 0
+    ToolTip.text: songTitle + (songArtist.length > 0 ? " - " + songArtist : "")
+    ToolTip.delay: 500
 
     // Background container
     Item {
@@ -77,6 +75,7 @@ MouseArea {
             text: displayText
             elide: Text.ElideRight
             maximumLineCount: 1
+            horizontalAlignment: implicitWidth < parent.width - Kirigami.Units.smallSpacing * 2 ? Text.AlignHCenter : Text.AlignLeft
 
             font.pixelSize: fontSize
             font.family: fontFamily.length > 0 ? fontFamily : Kirigami.Theme.defaultFont.family
