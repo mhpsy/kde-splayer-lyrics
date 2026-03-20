@@ -1,5 +1,7 @@
 # SPlayer Lyrics - KDE Plasma Widget
 
+[中文文档](README_CN.md)
+
 A KDE Plasma 6 widget that displays current song lyrics from [SPlayer](https://github.com/imsyy/SPlayer) in your panel/taskbar.
 
 ![Plasma 6](https://img.shields.io/badge/Plasma-6.0+-blue)
@@ -40,6 +42,12 @@ cp -r contents metadata.json ~/.local/share/plasma/plasmoids/org.mhpsy.splayer.l
 
 After installation, right-click on your panel → **Add Widgets** → search for **SPlayer Lyrics**.
 
+> **Note:** After installing or updating, restart plasmashell to load the widget:
+>
+> ```bash
+> kquitapp6 plasmashell && kstart plasmashell
+> ```
+
 ## Configuration
 
 Right-click the widget → **Configure...** to customize:
@@ -53,6 +61,7 @@ Right-click the widget → **Configure...** to customize:
 | Custom Color | Use a custom text color | Off |
 | Animation Type | none / fade / slide / slide+fade | slide |
 | Animation Duration | Transition duration in ms | 300 |
+| Min Width | Minimum widget width in pixels | 150 |
 | Max Width | Maximum widget width in pixels | 400 |
 | Idle Text | Text shown when no lyrics | ♪ SPlayer Lyrics |
 | Prefer Translation | Show translated lyrics | Off |
